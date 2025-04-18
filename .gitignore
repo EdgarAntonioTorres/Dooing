@@ -1,0 +1,61 @@
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Laravel
+/vendor/
+node_modules/
+.env
+.env.*  # Por si tienes archivos de entorno como .env.local, .env.testing, etc.
+
+# Archivos de caché y logs
+/storage/*.key
+/storage/app/public
+/storage/framework/cache
+/storage/framework/sessions
+/storage/framework/views
+/storage/logs
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
+
+# Archivos compilados de Laravel Mix / Vite
+/public/hot
+/public/storage
+/public/mix-manifest.json
+/public/build
+
+# Archivos de errores
+npm-debug.log
+yarn-error.log
+*.log
+
+# Archivos de base de datos locales
+*.sqlite
+*.sqlite3
+*.sql
+*.bak
+
+# IDEs y editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos temporales o personales
+*.tmp
+*.temp
+*.swp
+*.bak
+
+# Tests
+phpunit.result.cache
+
+# Laravel Telescope
+storage/telescope
+
+# Laravel Debugbar
+storage/debugbar
+
+# Archivos relacionados con MongoDB
+dump/
+*.bson
