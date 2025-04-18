@@ -1,0 +1,19 @@
+name: PHP Lint
+
+on: [push, pull_request]
+
+jobs:
+  phplint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v3
+
+      - name: Instalar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+
+      - name: Ejecutar PHP Lint
+        run: |
+          find . -type f -name "*.php" -exec php -l {} \;
