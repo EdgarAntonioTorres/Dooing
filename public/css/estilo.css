@@ -1,0 +1,230 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  html, body {
+    height: 100%;
+  }
+  
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    color: #333;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .container {
+    width: 90%;
+    max-width: 900px;
+    margin: auto;
+  }
+  
+  .main-header {
+    background: #4a90e2;
+    color: white;
+    padding: 20px 0;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .main-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo {
+    font-size: 28px;
+  }
+  
+  .nav-links a {
+    margin-left: 20px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: opacity 0.3s;
+  }
+  
+  .nav-links a:hover {
+    opacity: 0.8;
+  }
+  
+  .main-content {
+    flex: 1;
+    padding: 20px 0;
+  }
+  
+  .hero {
+    text-align: center;
+    margin: 40px 0;
+  }
+  
+  .hero h2 {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+  
+  .hero p {
+    font-size: 18px;
+    color: #555;
+  }
+  
+  .card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+    border: none;
+  }
+  
+  .card-body {
+    padding: 30px;
+  }
+  
+  .form-control {
+    padding: 12px;
+    border: 2px solid #4a90e2;
+    border-radius: 10px;
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  
+  .btn-primary {
+    background: #4a90e2;
+    color: white;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .btn-primary:hover {
+    background: #357ABD;
+  }
+  
+  .btn-warning {
+    background: #ffc107;
+    color: #212529;
+  }
+  
+  .btn-danger {
+    background: #dc3545;
+  }
+  
+  .tarea-item {
+    background: #f0f4f8;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .tarea-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .tarea-info {
+    flex: 1;
+  }
+  
+  .tarea-titulo {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 5px;
+  }
+  
+  .tarea-descripcion {
+    color: #555;
+    margin-bottom: 5px;
+  }
+  
+  .tarea-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 14px;
+    color: #777;
+  }
+  
+  .tarea-acciones {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .estado-pendiente {
+    color: #dc3545;
+    font-weight: bold;
+  }
+  
+  .estado-en-proceso {
+    color: #ffc107;
+    font-weight: bold;
+  }
+  
+  .estado-completada {
+    color: #28a745;
+    font-weight: bold;
+  }
+  
+  .filtros {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 15px;
+  }
+  
+  .user-info {
+    color: white;
+    margin-left: 20px;
+    font-weight: bold;
+  }
+  
+  .logout-link {
+    color: #ffcccb;
+  }
+  
+  .auth-card {
+    max-width: 500px;
+    margin: 40px auto;
+  }
+  
+  .main-footer {
+    background: #4a90e2;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 40px;
+  }
+  
+  .prioridad-alta {
+    border-left: 5px solid #dc3545;
+  }
+  
+  .prioridad-media {
+    border-left: 5px solid #ffc107;
+  }
+  
+  .prioridad-baja {
+    border-left: 5px solid #28a745;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #777;
+  }
+  
+  .empty-state i {
+    font-size: 50px;
+    margin-bottom: 15px;
+    color: #ccc;
+  }
