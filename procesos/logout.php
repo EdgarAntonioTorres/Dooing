@@ -3,7 +3,10 @@ session_start();
 include "../clases/Conexion.php";
 include "../clases/Auth.php";
 
-$auth = new Auth();
+use App\Auth;
+
+$auth = new App\Auth();
+
 $auth->cerrarSesion();
 
 header("Location: ../index.php");

@@ -3,7 +3,9 @@ session_start();
 include "../clases/Conexion.php";
 include "../clases/Auth.php";
 
-$auth = new Auth();
+use App\Auth;
+
+$auth = new App\Auth();
 
 // Verificar si se enviaron los campos necesarios
 if (isset($_POST['email']) && isset($_POST['password'])) {
