@@ -10,7 +10,10 @@ if (!isset($_SESSION['usuario_id'])) {
 include "../clases/Conexion.php";
 include "../clases/Task.php";
 
-$task = new Task();
+$task = new App\Task();
+
+
+$task = new App\Task();
 
 if (isset($_POST['id'])) {
     $id = $_POST['id'];

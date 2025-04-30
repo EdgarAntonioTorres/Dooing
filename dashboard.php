@@ -10,7 +10,9 @@ if (!isset($_SESSION['usuario_id'])) {
 include "./clases/Conexion.php";
 include "./clases/Task.php";
 
-$task = new Task();
+use App\Task;
+
+$task = new App\Task();
 
 // Obtener filtros
 $filtro = isset($_GET['filtro']) ? $_GET['filtro'] : 'todas';
