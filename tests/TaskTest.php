@@ -16,6 +16,9 @@ class TaskTest extends TestCase
         $this->task = $this->createMock(Task::class);
     }
     
+    /**
+     * Test de creación de tarea exitosa
+     */
     public function testCrearTareaExito()
     {
         $datos = [
@@ -38,6 +41,77 @@ class TaskTest extends TestCase
         $this->assertTrue($respuesta->getInsertedId() !== null);
     }
     
+    /**
+     * Test de obtención de tareas
+     */
+    public function testObtenerTareas()
+    {
+        $userId = '60f1b5b7e6b6c03a6f9f4d2a';
+        
+        // Crear tareas de ejemplo que simularían lo devuelto por MongoDB
+        $tarea1 = (object)[
+            '_id' => '60f1b5b7e6b6c03a6f9f4d2b',
+            'titulo' => 'Tarea 1',
+            'estado' => 'pendiente'
+        ];
+        
+        $tarea2 = (object)[
+            '_id' => '60f1b5b7e6b6c03a6f9f4d2c',
+            'titulo' => 'Tarea 2',
+            'estado' => 'completada'
+        ];
+        
+        // Mock de la respuesta para todas las tareas
+        $this->task->method('obtenerTareas')
+                  ->with($userId, 'todas')
+                  ->willReturn([$tarea1, $tarea2]);
+        
+        $tareas = $this->task->obtenerTareas($userId, 'todas');
+        
+        $this->assertCount(2, $tareas);
+        
+        // Mock para filtrar tareas
+        $task2 = $this->createMock(Task::class);
+        $task2->method('obtenerTareas')
+             ->with($userId, 'pendiente')
+             ->willReturn([$tarea1]);
+        
+        $tareasPendientes = $task2->obtenerTareas($userId, 'pendiente');
+        
+        $this->assertCount(1, $tareasPendientes);
+        $this->assertEquals('pendiente', $tareasPendientes[0]->estado);
+    }
+    
+    /**
+     * Test de obtención de una tarea específica
+     */
+    public function testObtenerTarea()
+    {
+        $tareaId = '60f1b5b7e6b6c03a6f9f4d2b';
+        
+        // Crear tarea de ejemplo que simularía lo devuelto por MongoDB
+        $tarea = (object)[
+            '_id' => $tareaId,
+            'titulo' => 'Tarea específica',
+            'descripcion' => 'Esta es una tarea específica',
+            'fecha_limite' => '2025-05-01',
+            'prioridad' => 'alta',
+            'estado' => 'pendiente'
+        ];
+        
+        $this->task->method('obtenerTarea')
+                  ->with($tareaId)
+                  ->willReturn($tarea);
+        
+        $resultado = $this->task->obtenerTarea($tareaId);
+        
+        $this->assertEquals($tareaId, $resultado->_id);
+        $this->assertEquals('Tarea específica', $resultado->titulo);
+    }
+    
+    /**
+     * Test de actualización de tarea exitosa
+     */
     public function testActualizarTareaExito()
     {
         $id = '60f1b5b7e6b6c03a6f9f4d2a';
@@ -63,6 +137,9 @@ class TaskTest extends TestCase
         $this->assertEquals(1, $respuesta->getMatchedCount());
     }
     
+    /**
+     * Test de eliminación de tarea exitosa
+     */
     public function testEliminarTareaExito()
     {
         $id = '60f1b5b7e6b6c03a6f9f4d2a';
@@ -79,6 +156,9 @@ class TaskTest extends TestCase
         $this->assertEquals(1, $respuesta->getDeletedCount());
     }
     
+    /**
+     * Test de mensaje de tarea según acción
+     */
     public function testMensajesTarea()
     {
         $this->task->method('mensajesTarea')
@@ -98,5 +178,6 @@ class TaskTest extends TestCase
         $this->assertStringContainsString('¡Genial!', $this->task->mensajesTarea('insert'));
         $this->assertStringContainsString('¡Excelente!', $this->task->mensajesTarea('update'));
         $this->assertStringContainsString('¡Listo!', $this->task->mensajesTarea('delete'));
+        $this->assertEquals('', $this->task->mensajesTarea('accion_invalida'));
     }
 }

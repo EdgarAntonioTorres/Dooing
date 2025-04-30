@@ -1,26 +1,26 @@
 <?php
-    require_once __DIR__ . '/../vendor/autoload.php';
-    class Conexion {
-        public function conectar() {
+class Conexion {
+    private static $conexion;
+    
+    public static function conectar() {
+        if (!isset(self::$conexion)) {
             try {
-                $servidor = "127.0.0.1";
-                $usuario = "mongoadmin";
-                $password = "123456";
-                $baseDatos = "todo_app";
-                $puerto = "27017";
-    
-                $cadenaConexion = "mongodb://" .
-                                    $usuario . ":" .
-                                    $password . "@" .
-                                    $servidor . ":" .
-                                    $puerto . "/" .
-                                    $baseDatos;
-    
-                $cliente = new MongoDB\Client($cadenaConexion);
-                return $cliente->selectDatabase($baseDatos);
-            } catch (\Throwable $th) {
-                return $th->getMessage();
+                $host = getenv('DB_HOST') ?: 'localhost';
+                $puerto = getenv('DB_PORT') ?: '27017';
+                $usuario = getenv('DB_USERNAME') ?: 'mongoadmin';
+                $password = getenv('DB_PASSWORD') ?: '123456';
+                $db = getenv('DB_DATABASE') ?: 'todo_app_test';
+                
+                $cadenaConexion = "mongodb://$usuario:$password@$host:$puerto/$db";
+                
+                $cliente = new \MongoDB\Client($cadenaConexion);
+                self::$conexion = $cliente->selectDatabase($db);
+                
+                return self::$conexion;
+            } catch (\Exception $e) {
+                throw new \Exception("Error de conexión: " . $e->getMessage());
             }
         }
+        return self::$conexion;
     }
-?>
+}

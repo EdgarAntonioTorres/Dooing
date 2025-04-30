@@ -1,5 +1,9 @@
 <?php
-    class Auth extends Conexion {
+namespace Tests;
+
+use PHPUnit\Framework\TestCase;
+
+    class Auth extends TestCase {
         public function registrarUsuario($datos) {
             try {
                 // Verificar si el usuario ya existe
