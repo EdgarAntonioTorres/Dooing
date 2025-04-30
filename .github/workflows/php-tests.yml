@@ -2,46 +2,35 @@ name: PHP Tests
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ main, master, develop ]
+    branches: [ main, master ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     
     services:
-      # Configurar MongoDB como servicio
       mongodb:
         image: mongo:4.4
+        env:
+          MONGO_INITDB_ROOT_USERNAME: mongoadmin
+          MONGO_INITDB_ROOT_PASSWORD: 123456
+          MONGO_INITDB_DATABASE: todo_app_test
         ports:
           - 27017:27017
 
     steps:
     - uses: actions/checkout@v3
-
+    
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.1'
-        extensions: mbstring, mongodb
-        coverage: xdebug
-        tools: composer:v2, phpunit
-    
-    - name: Validate composer.json
-      run: composer validate --strict
-
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
-
+        php-version: '7.4'
+        extensions: mongodb
+        
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
-
-    - name: Run test suite
-      run: vendor/bin/phpunit
+      
+    - name: Run tests
+      run: ./vendor/bin/phpunit

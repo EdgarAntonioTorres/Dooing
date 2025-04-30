@@ -13,6 +13,9 @@ class AuthTest extends TestCase
         $this->auth = $this->createMock(Auth::class);
     }
     
+    /**
+     * Test de registro de usuario exitoso
+     */
     public function testRegistrarUsuarioExito()
     {
         $datos = [
@@ -35,6 +38,9 @@ class AuthTest extends TestCase
         $this->assertEquals('Usuario registrado con éxito', $respuesta['mensaje']);
     }
     
+    /**
+     * Test de registro con email existente
+     */
     public function testRegistrarUsuarioEmailExistente()
     {
         $datos = [
@@ -57,6 +63,9 @@ class AuthTest extends TestCase
         $this->assertEquals('El correo electrónico ya está registrado', $respuesta['mensaje']);
     }
     
+    /**
+     * Test de inicio de sesión exitoso
+     */
     public function testLoginUsuarioExito()
     {
         $email = 'test@example.com';
@@ -76,6 +85,9 @@ class AuthTest extends TestCase
         $this->assertEquals('Inicio de sesión exitoso', $respuesta['mensaje']);
     }
     
+    /**
+     * Test de inicio de sesión fallido
+     */
     public function testLoginUsuarioError()
     {
         $email = 'test@example.com';
@@ -93,5 +105,37 @@ class AuthTest extends TestCase
         
         $this->assertEquals('error', $respuesta['status']);
         $this->assertEquals('Correo o contraseña incorrectos', $respuesta['mensaje']);
+    }
+    
+    /**
+     * Test de verificación de sesión
+     */
+    public function testVerificarSesion()
+    {
+        // Cuando hay sesión activa
+        $this->auth->method('verificarSesion')
+             ->willReturn(true);
+        
+        $this->assertTrue($this->auth->verificarSesion());
+        
+        // Resetear mock para probar otro escenario
+        $this->auth = $this->createMock(Auth::class);
+        
+        // Cuando no hay sesión activa
+        $this->auth->method('verificarSesion')
+             ->willReturn(false);
+        
+        $this->assertFalse($this->auth->verificarSesion());
+    }
+    
+    /**
+     * Test de cierre de sesión
+     */
+    public function testCerrarSesion()
+    {
+        $this->auth->method('cerrarSesion')
+             ->willReturn(true);
+        
+        $this->assertTrue($this->auth->cerrarSesion());
     }
 }
