@@ -2,33 +2,32 @@
 namespace Tests;
 
 use PHPUnit\Framework\TestCase;
-use App\Conexion;
+use Tests\TestableConexion;
 
 class ConexionTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        // Reiniciar el estado después de cada prueba
+        TestableConexion::resetTestState();
+    }
+    
     /**
      * Test para verificar que la conexión retorna un objeto MongoDB
      */
     public function testConexionRetornaObjetoMongoDB()
     {
-        // Crear un mock para la clase Conexion
-        $conexion = $this->getMockBuilder(Conexion::class)
-                         ->onlyMethods(['conectar'])
-                         ->getMock();
+        // Configurar la conexión de prueba
+        $mockConnection = (object)['tareas' => (object)[], 'usuarios' => (object)[]];
+        TestableConexion::setTestConnection($mockConnection);
         
-        // Definir el comportamiento del mock
-        $conexion->method('conectar')
-                ->willReturn((object)['tareas' => (object)[], 'usuarios' => (object)[]]);
+        // Obtener la conexión
+        $resultado = TestableConexion::conectar();
         
-        // Ejecutar el método y verificar que devuelve un objeto
-        $resultado = $conexion->conectar();
+        // Verificar
         $this->assertIsObject($resultado);
-        
-        // Verificar que el objeto tiene la propiedad 'tareas'
-        $this->assertObjectHasAttribute('tareas', $resultado);
-        
-        // Verificar que el objeto tiene la propiedad 'usuarios'
-        $this->assertObjectHasAttribute('usuarios', $resultado);
+        $this->assertObjectHasProperty('tareas', $resultado);
+        $this->assertObjectHasProperty('usuarios', $resultado);
     }
     
     /**
@@ -36,17 +35,14 @@ class ConexionTest extends TestCase
      */
     public function testConexionManejaErrores()
     {
-        // Crear un mock para la clase Conexion
-        $conexion = $this->getMockBuilder(Conexion::class)
-                         ->onlyMethods(['conectar'])
-                         ->getMock();
+        // Configurar para lanzar una excepción
+        TestableConexion::setShouldThrowException(true);
         
-        // Definir el comportamiento del mock para simular un error
-        $conexion->method('conectar')
-                ->willReturn('Error de conexión');
+        // Esperar excepción
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Error de conexión');
         
-        // Ejecutar el método y verificar que devuelve un string con el error
-        $resultado = $conexion->conectar();
-        $this->assertIsString($resultado);
+        // Intentar conectar - debería lanzar excepción
+        TestableConexion::conectar();
     }
 }

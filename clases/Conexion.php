@@ -1,4 +1,6 @@
 <?php
+namespace App;
+
 class Conexion {
     private static $conexion;
     
