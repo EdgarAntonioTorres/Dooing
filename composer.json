@@ -1,20 +1,14 @@
 {
-    "name": "todoing/app",
-    "description": "Aplicación To-Do con PHP y MongoDB",
+    "name": "todoing/task-manager",
+    "description": "Aplicación de gestión de tareas",
     "type": "project",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Tu Nombre",
-            "email": "tu@email.com"
-        }
-    ],
+    "license": "proprietary",
     "require": {
         "php": ">=7.4",
-        "mongodb/mongodb": "^1.16.0"
+        "mongodb/mongodb": "^1.10"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.0"
+        "phpunit/phpunit": "^9.5"
     },
     "autoload": {
         "psr-4": {

@@ -29,6 +29,3 @@ Thumbs.db
 /coverage/
 /build/
 /.phpunit.result.cache
-
-# Docker
-.dockerignore
