@@ -29,9 +29,3 @@ Thumbs.db
 /coverage/
 /build/
 /.phpunit.result.cache
-
-# Docker
-Dockerfile
-.dockerignore
-docker-compose.yml
-mongo-init.js
