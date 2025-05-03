@@ -62,17 +62,15 @@ ToDoing es una aplicación web de gestión de tareas desarrollada con PHP y Mong
 
    use todo_app
 
-   db.usuarios.insertOne({
-     nombre: "Nombre del Usuario",
-     email: "usuario@example.com",
-     password: "contraseña123"
-    });
-
    db.createUser({
      user: "mongoadmin",
      pwd: "123456",
      roles: [{ role: "readWrite", db: "todo_app" }]
    })
+
+   db.createCollection("usuarios")
+
+   db.createCollection("tareas")
    ```
 
 4. Configurar el entorno web:
