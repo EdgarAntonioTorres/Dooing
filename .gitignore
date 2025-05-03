@@ -3,7 +3,6 @@
 
 # Composer
 composer.phar
-composer.lock
 
 # PHP Storm
 .idea/
