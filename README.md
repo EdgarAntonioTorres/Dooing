@@ -33,60 +33,158 @@ ToDoing es una aplicación web de gestión de tareas desarrollada con PHP y Mong
   - JavaScript
   - SweetAlert para notificaciones
 
-## Instalación
+## Instalación con Docker (Recomendado)
 
-### Requisitos previos
-- PHP 8.0 o superior
-- MongoDB
-- Composer
+La forma más sencilla de ejecutar esta aplicación es usando Docker. Sigue estos pasos:
 
-### Pasos de instalación
+1. Asegúrate de tener instalados [Docker](https://docs.docker.com/get-docker/) y [Docker Compose](https://docs.docker.com/compose/install/).
 
-1. Clonar el repositorio:
+2. Clona este repositorio:
    ```bash
    git clone https://github.com/tu-usuario/todoing.git
    cd todoing
-   ```
+  ```
+3. Inicia los contenedores usando Docker Compose:
+  ```
+  docker-compose up -d
+  ```
+4. Accede a la aplicación en tu navegador:
+  ```
+  http://localhost:8080
+  ```
+## Personalización de la configuración
+
+Puedes modificar la configuración en el archivo docker-compose.yml. Por ejemplo, para cambiar las credenciales de MongoDB:
+  ```yaml
+  mongodb:
+  environment:
+    - MONGO_INITDB_ROOT_USERNAME=tu_usuario
+    - MONGO_INITDB_ROOT_PASSWORD=tu_contraseña
+  ```
+
+## Instalación manual
+
+## Requisitos previos
+
+- PHP 8.0 o superior
+- MongoDB y MongoShell
+- Composer
+
+## Pasos de instalación
+
+1. Clonar el repositorio:
+  ```bash
+  git clone https://github.com/tu-usuario/todoing.git
+  cd todoing
+  ```
 
 2. Instalar dependencias con Composer:
-   ```bash
-   composer install
-   composer require mongodb/mongodb
-   ```
+  ```bash
+  composer install
+  composer require mongodb/mongodb
+  ```
 
 3. Configurar MongoDB:
-   - Crear una base de datos llamada `todo_app`
-   - Crear un usuario para la base de datos:
-   ```
-   mongosh
+- Crear una base de datos llamada todo_app
+- Crear un usuario para la base de datos:
+  ```
+  mongosh
 
-   use todo_app
+  use todo_app
 
-   db.createUser({
-     user: "mongoadmin",
-     pwd: "123456",
-     roles: [{ role: "readWrite", db: "todo_app" }]
-   })
+  db.usuarios.insertOne({
+    nombre: "Nombre del Usuario",
+    email: "usuario@example.com",
+    password: "contraseña123"
+  });
 
-   db.createCollection("usuarios")
-
-   db.createCollection("tareas")
-   ```
+  db.createUser({
+    user: "mongoadmin",
+    pwd: "123456",
+    roles: [{ role: "readWrite", db: "todo_app" }]
+  })
+  ```
 
 4. Configurar el entorno web:
-   - Asegurarse de que el directorio del proyecto esté configurado en el servidor web (Apache, Nginx, etc.)
-   - Verificar que las extensiones de PHP requeridas estén habilitadas: mongodb, mbstring, curl
+- Asegurarse de que el directorio del proyecto esté configurado en el servidor web (Apache, Nginx, etc.)
+- Verificar que las extensiones de PHP requeridas estén habilitadas: mongodb, mbstring, curl
 
 5. Acceder a la aplicación:
-   - Abrir un navegador y navegar a `http://localhost/todoing` (o la URL correspondiente según la configuración del servidor)
+Abrir un navegador y navegar a http://localhost/todoing (o la URL correspondiente según la configuración del servidor)
+
+## Imagen Docker
+
+Esta aplicación está disponible como una imagen Docker en Docker Hub:
+  ```bash
+  docker pull tunombredeusuario/todoing:latest
+  ```
+
+## Uso de la imagen de Docker
+
+Crea un archivo docker-compose.yml:
+  ```yml
+  version: '3.8'
+
+  services:
+    web:
+      image: tunombredeusuario/todoing:latest
+      ports:
+        - "8080:80"
+      depends_on:
+        - mongodb
+      environment:
+        - MONGODB_HOST=mongodb
+        - MONGODB_PORT=27017
+        - MONGODB_USER=mongoadmin
+        - MONGODB_PASSWORD=123456
+        - MONGODB_DATABASE=todo_app
+
+    mongodb:
+      image: mongo:5
+      environment:
+        - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+        - MONGO_INITDB_ROOT_PASSWORD=123456
+      ports:
+        - "27017:27017"
+      volumes:
+        - mongodb_data:/data/db
+        - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+
+  volumes:
+    mongodb_data:
+  ```
+
+2. Crea un archivo init-mongo.js:
+
+  ```
+  db = db.getSiblingDB('todo_app');
+
+  db.createCollection('usuarios');
+  db.createCollection('tareas');
+
+  db.createUser({
+    user: "mongoadmin",
+    pwd: "123456",
+    roles: [{ role: "readWrite", db: "todo_app" }]
+  });
+
+  // Base de datos para tests
+  db = db.getSiblingDB('todo_app_test');
+  db.createCollection('usuarios');
+  db.createCollection('tareas');
+  ```
+
+3. Ejecuta los contenedores:
+  ```
+  docker-compose up -d
+  ```
 
 ## Pruebas
 
 Para ejecutar las pruebas unitarias:
-
-```bash
-./vendor/bin/phpunit
-```
+  ```
+  ./vendor/bin/phpunit
+  ```
 
 ## Despliegue con GitHub Actions
 
