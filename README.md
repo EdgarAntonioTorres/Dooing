@@ -43,7 +43,7 @@ La forma más sencilla de ejecutar esta aplicación es usando Docker. Sigue esto
    ```bash
    git clone https://github.com/tu-usuario/todoing.git
    cd todoing
-  ```
+   ```
 3. Inicia los contenedores usando Docker Compose:
   ```
   docker-compose up -d
