@@ -30,36 +30,27 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
-          extensions: mongodb
+          php-version: '8.1'
+          extensions: mongodb-1.13.0
           coverage: xdebug
           tools: composer:v2
+
+      - name: Check PHP and MongoDB versions
+        run: |
+          php -v
+          php -m | grep mongodb
+          php -i | grep -i mongodb
 
       - name: Validate composer.json
         run: composer validate --strict
 
-      - name: Cache Composer packages
-        id: composer-cache
-        uses: actions/cache@v3
-        with:
-          path: vendor
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php-
-
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+        run: composer install --prefer-dist --no-progress --ignore-platform-reqs
 
-      - name: Install MongoDB Shell
+      - name: Use MongoDB Shell from service container
         run: |
-          curl -fsSL https://www.mongodb.org/static/pgp/server-5.0.asc | sudo apt-key add -
-          echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
-          sudo apt-get update
-          sudo apt-get install -y mongodb-mongosh
-
-      - name: Create MongoDB test database
-        run: |
-          mongosh --host localhost --port 27017 -u mongoadmin -p 123456 --eval "db = db.getSiblingDB('todo_app_test'); db.createCollection('users'); db.createCollection('tasks');"
+          # Utilizamos el mongosh del contenedor de MongoDB
+          docker exec -i $(docker ps -q --filter ancestor=mongo:5) mongosh --host localhost --port 27017 -u mongoadmin -p 123456 --eval "db = db.getSiblingDB('todo_app_test'); db.createCollection('usuarios'); db.createCollection('tareas');"
 
       - name: Run test suite
         run: composer run-script test

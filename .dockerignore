@@ -1,0 +1,48 @@
+# Control de versiones
+.git
+.github
+.gitignore
+
+# Dependencias que serán instaladas dentro del contenedor
+/vendor
+
+# Archivos de configuración Docker (ya están dentro del contexto)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Archivos de entorno y configuración local
+.env
+.env.example
+*.local.php
+
+# Archivos de IDE y editores
+.idea
+.vscode
+*.sublime-*
+*.swp
+*.swo
+
+# Archivos de testing
+/tests
+/phpunit
+phpunit.xml
+.phpunit.result.cache
+
+# Archivos de documentación
+README*.md
+CHANGELOG.md
+LICENSE
+CONTRIBUTING.md
+
+# Archivos de logs
+/logs
+*.log
+
+# Archivos de caché y compilados
+/cache
+*.cache
+
+# Otros archivos innecesarios para la imagen
+*.DS_Store
+Thumbs.db
