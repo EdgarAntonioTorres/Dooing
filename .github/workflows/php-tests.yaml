@@ -40,9 +40,12 @@ jobs:
           php -v
           php -m | grep mongodb
           php -i | grep -i mongodb
-
+          
       - name: Update composer.lock
         run: composer update --no-scripts --no-interaction
+
+      - name: Validate composer.json with strict validation
+        run: composer validate --strict
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --ignore-platform-reqs
