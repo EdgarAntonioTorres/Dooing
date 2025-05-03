@@ -3,11 +3,11 @@
     class Conexion {
         public function conectar() {
             try {
-                $servidor = "127.0.0.1";
-                $usuario = "mongoadmin";
-                $password = "123456";
-                $baseDatos = "todo_app";
-                $puerto = "27017";
+                $servidor = getenv('MONGODB_HOST') ?: "127.0.0.1";
+                $usuario = getenv('MONGODB_USER') ?: "mongoadmin";
+                $password = getenv('MONGODB_PASSWORD') ?: "123456";
+                $baseDatos = getenv('MONGODB_DATABASE') ?: "todo_app";
+                $puerto = getenv('MONGODB_PORT') ?: "27017";
     
                 $cadenaConexion = "mongodb://" .
                                     $usuario . ":" .

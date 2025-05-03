@@ -10,10 +10,7 @@ if (!isset($_SESSION['usuario_id'])) {
 include "../clases/Conexion.php";
 include "../clases/Task.php";
 
-$task = new App\Task();
-
-
-$task = new App\Task();
+$task = new Task();
 
 if (isset($_POST['titulo']) && isset($_POST['fecha_limite']) && isset($_POST['estado']) && isset($_POST['prioridad'])) {
     $datos = array(
