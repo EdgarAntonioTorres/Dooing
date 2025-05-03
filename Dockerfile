@@ -1,46 +1,72 @@
 FROM php:8.1-apache
 
-# Instalar dependencias esenciales
+# Instalar dependencias
 RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    libssl-dev \
     libcurl4-openssl-dev \
-    libzip-dev
+    pkg-config \
+    libssl-dev \
+    zip \
+    unzip \
+    git \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    iputils-ping \
+    && rm -rf /var/lib/apt/lists/*
 
-# Configurar Git
-RUN git config --global --add safe.directory /var/www/html
+# Instalar extensión MongoDB para PHP correctamente
+RUN pecl install mongodb-1.13.0 && \
+    echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini && \
+    docker-php-ext-enable mongodb
 
-# Instalar extensiones PHP necesarias
-RUN pecl install mongodb && \
-    docker-php-ext-enable mongodb && \
-    docker-php-ext-install zip
+# Instalar extensiones PHP adicionales
+RUN docker-php-ext-install mbstring pdo pdo_mysql zip exif pcntl
 
-# Instalar Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# Habilitar mod_rewrite de Apache
+# Habilitar mod_rewrite para Apache
 RUN a2enmod rewrite
 
-# Configurar Apache
-COPY docker/apache-config.conf /etc/apache2/sites-available/000-default.conf
-
-# Definir directorio de trabajo
+# Configurar directorio de trabajo
 WORKDIR /var/www/html
 
-# Copiar los archivos del proyecto
-COPY . .
+# Instalar Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Dar permisos a Apache
-RUN chown -R www-data:www-data /var/www/html
+# Copiar composer.json y composer.lock primero para aprovechar la caché de Docker
+COPY composer.json composer.lock /var/www/html/
 
-# Exponer puerto 80
+# Instalar dependencias
+RUN composer install --no-interaction --no-scripts --ignore-platform-reqs
+
+# Configurar Apache para permitir .htaccess
+RUN echo '<Directory /var/www/html>\n\
+    Options Indexes FollowSymLinks\n\
+    AllowOverride All\n\
+    Require all granted\n\
+</Directory>' > /etc/apache2/conf-available/htaccess.conf \
+    && a2enconf htaccess
+
+# Activar errores de PHP para depuración
+RUN echo 'display_errors = On\n\
+error_reporting = E_ALL' > /usr/local/etc/php/conf.d/error-reporting.ini
+
+# Copiar el resto de la aplicación
+COPY . /var/www/html/
+
+# Configurar permisos
+RUN chown -R www-data:www-data /var/www/html \
+    && find /var/www/html -type d -exec chmod 755 {} \; \
+    && find /var/www/html -type f -exec chmod 644 {} \;
+
+# Exponer puerto
 EXPOSE 80
 
-# Script de entrada personalizado para instalar dependencias al iniciar
-COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+# Configurar variables de entorno por defecto
+ENV MONGODB_HOST=mongodb
+ENV MONGODB_PORT=27017
+ENV MONGODB_USER=mongoadmin
+ENV MONGODB_PASSWORD=123456
+ENV MONGODB_DATABASE=todo_app
 
-# Usar script como entrypoint
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+# Directamente usar apache2-foreground para iniciar
 CMD ["apache2-foreground"]

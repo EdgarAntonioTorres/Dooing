@@ -22,7 +22,7 @@ ToDoing es una aplicación web de gestión de tareas desarrollada con PHP y Mong
 ## Tecnologías Utilizadas
 
 - **Backend**
-  - PHP 8.0
+  - PHP 8.1
   - MongoDB (base de datos NoSQL)
 
 - **Frontend**
@@ -37,10 +37,47 @@ ToDoing es una aplicación web de gestión de tareas desarrollada con PHP y Mong
 
 La forma más sencilla de ejecutar esta aplicación es usando Docker. Sigue estos pasos:
 
-1. Asegúrate de tener instalados [Docker](https://docs.docker.com/get-docker/) y [Docker Compose](https://docs.docker.com/compose/install/).
+### Requisitos previos
 
-2. Clona este repositorio:
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+### Método 1: Usando la imagen Docker pública
+
+1. Crea un directorio para la aplicación:
    ```bash
+   mkdir todoing && cd todoing
+   ```
+
+2. Descarga los archivos necesarios:
+   ```bash
+   # Descargar docker-compose.yml
+   curl -O https://raw.githubusercontent.com/EdgarAntonioTorres/Dooing/main/docker-compose.yml
+
+   # Descargar init-mongo.js
+   curl -O https://raw.githubusercontent.com/EdgarAntonioTorres/Dooing/main/init-mongo.js
+   ```
+
+O crea los archivos manualmente:
+docker-compose.yml:
+
+```yaml
+version: '3.8'
+
+services:
+  web:
+    image: tunombredeusuario/todoing:latest
+    ports:
+      - "8080:80"
+    depends_on:
+      - mongodb
+    environment:
+      - MONGODB_HOST=mongodb
+      - MONGODB_PORT=27017
+      - MONGODB_USER=mongoadmin
+      - MONGODB_PASSWORD=123456
+      - MONGODB_DATABASE=todo_app
+=======
    git clone https://github.com/tu-usuario/todoing.git
    cd todoing
    ```
@@ -54,49 +91,126 @@ La forma más sencilla de ejecutar esta aplicación es usando Docker. Sigue esto
   ```
 ## Personalización de la configuración
 
-Puedes modificar la configuración en el archivo docker-compose.yml. Por ejemplo, para cambiar las credenciales de MongoDB:
-  ```yaml
+
   mongodb:
-  environment:
-    - MONGO_INITDB_ROOT_USERNAME=tu_usuario
-    - MONGO_INITDB_ROOT_PASSWORD=tu_contraseña
-  ```
+    image: mongo:5
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=123456
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+
+volumes:
+  mongodb_data:
+```
+
+init-mongo.js:
+
+```javascript
+db = db.getSiblingDB('todo_app');
+
+db.createCollection('usuarios');
+db.createCollection('tareas');
+
+db.createUser({
+  user: "mongoadmin",
+  pwd: "123456",
+  roles: [{ role: "readWrite", db: "todo_app" }]
+});
+
+// Base de datos para tests
+db = db.getSiblingDB('todo_app_test');
+db.createCollection('usuarios');
+db.createCollection('tareas');
+
+db.createUser({
+  user: "mongoadmin",
+  pwd: "123456",
+  roles: [{ role: "readWrite", db: "todo_app_test" }]
+});
+```
+
+3. Inicia los contenedores
+
+```bash
+docker-compose up -d
+```
+
+4. Accede a la aplicación en tu navegador:
+```
+http://localhost:8080
+```
+
+## Método 2: Construyendo la imagen localmente
+
+1. Clona este repositorio:
+
+```bash
+git clone https://github.com/EdgarAntonioTorres/Dooing.git
+cd todoing
+```
+
+2. Construye e inicia los contenedores:
+
+```bash
+docker-compose up -d --build
+```
+
+3. Accede a la aplicación en tu navegador:
+```
+http://localhost:8080
+```
+
+### Personalización de la configuración
+Puedes modificar las siguientes variables de entorno en el archivo docker-compose.yml para personalizar la configuración:
+
+- MONGODB_HOST: El nombre del host de MongoDB (por defecto: mongodb)
+- MONGODB_PORT: El puerto de MongoDB (por defecto: 27017)
+- MONGODB_USER: El nombre de usuario de MongoDB (por defecto: mongoadmin)
+- MONGODB_PASSWORD: La contraseña de MongoDB (por defecto: 123456)
+- MONGODB_DATABASE: El nombre de la base de datos (por defecto: todo_app)
+
+### Persistencia de datos
+Los datos de MongoDB se almacenan en un volumen Docker llamado mongodb_data, lo que garantiza que tus datos no se pierdan cuando los contenedores se detengan o reinicien.
 
 ## Instalación manual
 
-## Requisitos previos
+Si prefieres no usar Docker, puedes seguir estos pasos para instalar la aplicación manualmente:
 
-- PHP 8.0 o superior
+### Requisitos previos
+
+- PHP 8.1 o superior
 - MongoDB y MongoShell
 - Composer
 
-## Pasos de instalación
+### Pasos de instalación
 
 1. Clonar el repositorio:
-  ```bash
-  git clone https://github.com/tu-usuario/todoing.git
-  cd todoing
-  ```
+
+```bash
+git clone https://github.com/EdgarAntonioTorres/Dooing.git
+cd todoing
+```
 
 2. Instalar dependencias con Composer:
-  ```bash
-  composer install
-  composer require mongodb/mongodb
-  ```
+
+```bash
+composer install
+```
 
 3. Configurar MongoDB:
+
 - Crear una base de datos llamada todo_app
+
 - Crear un usuario para la base de datos:
+
   ```
   mongosh
 
   use todo_app
-
-  db.usuarios.insertOne({
-    nombre: "Nombre del Usuario",
-    email: "usuario@example.com",
-    password: "contraseña123"
-  });
 
   db.createUser({
     user: "mongoadmin",
@@ -106,91 +220,26 @@ Puedes modificar la configuración en el archivo docker-compose.yml. Por ejemplo
   ```
 
 4. Configurar el entorno web:
+
+
 - Asegurarse de que el directorio del proyecto esté configurado en el servidor web (Apache, Nginx, etc.)
-- Verificar que las extensiones de PHP requeridas estén habilitadas: mongodb, mbstring, curl
+Verificar que las extensiones de PHP requeridas estén habilitadas: mongodb, mbstring, curl
 
-5. Acceder a la aplicación:
-Abrir un navegador y navegar a http://localhost/todoing (o la URL correspondiente según la configuración del servidor)
 
-## Imagen Docker
-
-Esta aplicación está disponible como una imagen Docker en Docker Hub:
-  ```bash
-  docker pull tunombredeusuario/todoing:latest
-  ```
-
-## Uso de la imagen de Docker
-
-Crea un archivo docker-compose.yml:
-  ```yml
-  version: '3.8'
-
-  services:
-    web:
-      image: tunombredeusuario/todoing:latest
-      ports:
-        - "8080:80"
-      depends_on:
-        - mongodb
-      environment:
-        - MONGODB_HOST=mongodb
-        - MONGODB_PORT=27017
-        - MONGODB_USER=mongoadmin
-        - MONGODB_PASSWORD=123456
-        - MONGODB_DATABASE=todo_app
-
-    mongodb:
-      image: mongo:5
-      environment:
-        - MONGO_INITDB_ROOT_USERNAME=mongoadmin
-        - MONGO_INITDB_ROOT_PASSWORD=123456
-      ports:
-        - "27017:27017"
-      volumes:
-        - mongodb_data:/data/db
-        - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-
-  volumes:
-    mongodb_data:
-  ```
-
-2. Crea un archivo init-mongo.js:
-
-  ```
-  db = db.getSiblingDB('todo_app');
-
-  db.createCollection('usuarios');
-  db.createCollection('tareas');
-
-  db.createUser({
-    user: "mongoadmin",
-    pwd: "123456",
-    roles: [{ role: "readWrite", db: "todo_app" }]
-  });
-
-  // Base de datos para tests
-  db = db.getSiblingDB('todo_app_test');
-  db.createCollection('usuarios');
-  db.createCollection('tareas');
-  ```
-
-3. Ejecuta los contenedores:
-  ```
-  docker-compose up -d
-  ```
+- Acceder a la aplicación: Abrir un navegador y navegar a http://localhost/todoing (o la URL correspondiente según la configuración del servidor)
 
 ## Pruebas
 
 Para ejecutar las pruebas unitarias:
-  ```
-  ./vendor/bin/phpunit
-  ```
+```
+./vendor/bin/phpunit
+```
 
 ## Despliegue con GitHub Actions
 
 La aplicación incluye un flujo de trabajo de GitHub Actions para ejecutar pruebas automáticamente en cada push o pull request a la rama principal.
 
-## Estructura del Proyecto
+## Estructura del proyecto
 
 ```
 ├── clases/                # Clases PHP para la lógica de negocio
@@ -205,5 +254,10 @@ La aplicación incluye un flujo de trabajo de GitHub Actions para ejecutar prueb
 │   └── js/                # Scripts de JavaScript
 ├── tests/                 # Pruebas unitarias
 ├── .github/workflows/     # Configuración de GitHub Actions
+├── docker-compose.yml     # Configuración de Docker Compose
+├── Dockerfile             # Definición de la imagen Docker
 └── composer.json          # Configuración de dependencias
 ```
+
+Este README proporciona instrucciones claras para que los usuarios puedan utilizar tu aplicación ToDoing con Docker, ya sea descargando la imagen pública o construyéndola localmente. También mantiene la información sobre la instalación manual y otras secciones relevantes del README original.
+=======
