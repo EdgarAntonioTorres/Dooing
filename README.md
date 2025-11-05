@@ -259,5 +259,4 @@ La aplicación incluye un flujo de trabajo de GitHub Actions para ejecutar prueb
 └── composer.json          # Configuración de dependencias
 ```
 
-Este README proporciona instrucciones claras para que los usuarios puedan utilizar tu aplicación ToDoing con Docker, ya sea descargando la imagen pública o construyéndola localmente. También mantiene la información sobre la instalación manual y otras secciones relevantes del README original.
 =======
